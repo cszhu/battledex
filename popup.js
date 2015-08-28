@@ -16,7 +16,7 @@ function handleClick() {
 		document.getElementById('text').innerHTML = "Please enter a real pokemon";
 	}
 	else {
-		document.getElementById('text').innerHTML = value;
+		document.getElementById('text').innerHTML = "Looking up " + value;
 		value = value.toLowerCase();
 		var pokeURL = 'http://bulbapedia.bulbagarden.net/w/api.php?action=query&prop=revisions&titles='+value+'_(Pok%C3%A9mon)&rvprop=content&format=jsonfm';
 
@@ -34,7 +34,7 @@ function handleClick() {
 		    type: 'GET',
 		    headers: { 'Api-User-Agent': 'pokeLookup/1.0 (zoo.christina@gmail.com)' },
 		    success: function(data) {
-		    	console.log('yyay');
+		    	console.log('yay');
 		    },
 		    error: function(data) {
 		    	// console.log(data);
@@ -53,7 +53,6 @@ function handleClick() {
 
 		    	var rgx = /===Type effectiveness===\\n{{TypeEffectiveness(.+?(?=\|\\n\\nnotes))/;
 		    	var textNode = txt.match(rgx);
-		    	console.log('textnode is ');
 		    	console.log(textNode);
 
 		    	if (textNode == null) { // why is not all regex the same
@@ -61,13 +60,13 @@ function handleClick() {
 		    		textNode = txt.match(rgx2);
 		    	}
 
-		    	console.log(textNode[0]);
-		    	console.log(textNode[1]);
+		    	// console.log(textNode[0]);
+		    	// console.log(textNode[1]);
 
 		    	var strTxtNode = textNode[1].toString();
 
 		    	var types = strTxtNode.split("|\\n");
-		    	console.log('split one: ' + types[0] + ' ' + types[1] + ' ' + types[2] + ' ' + types[3]);
+		    	// console.log('split one: ' + types[0] + ' ' + types[1] + ' ' + types[2] + ' ' + types[3]);
 
 		    	var notEffective = new Array(); //does 0x dmg
 		    	var barelyEffective = new Array(); //does 0.25x dmg
@@ -78,15 +77,15 @@ function handleClick() {
 
 		    	var pkmnType = new Array(); // logs type of the pokemon
 
-		    	console.log('TYPE 1 SPLIT');
+		    	// console.log('TYPE 1 SPLIT');
 
 		    	for (j=0; j<types.length; j++) {
 		    		console.log(types[j]);
 		    		var pieces = types[j].toString(); // change to string
 		    		pieces = pieces.split("="); // split at = sign
 
-		    		console.log(pieces);
-		    		console.log('pieces length is ' + pieces.length)
+		    		// console.log(pieces);
+		    		// console.log('pieces length is ' + pieces.length)
 		    		if (pieces[0].length == 0) {
 		    			console.log('nothing here');
 		    		}
@@ -96,9 +95,8 @@ function handleClick() {
 		    			dmgVal = dmgVal.trim();
 		    			console.log('attacktype is ' + attackType);
 		    			console.log('dmg val is ' + dmgVal);
-		    			console.log('index is ' + attackType.indexOf("type"));
+		    			// console.log('index is ' + attackType.indexOf("type"));
 		    			if (attackType.indexOf("type") > -1) {
-		    				console.log('type');
 		    				pkmnType.push(dmgVal); //the second half of the string contains the type
 		    			}
 		    			else if (dmgVal == 0) { notEffective.push(attackType); }
@@ -248,15 +246,6 @@ function handleClick() {
 		    		node.appendChild(linebreak);
 		    		node.appendChild(linebreak);
 		    	}
-
-
-		    	console.log(pkmnType);
-		    	console.log(notEffective);
-		    	console.log(barelyEffective);
-		    	console.log(halfEffective);
-		    	console.log(Effective);
-		    	console.log(superEffective);
-		    	console.log(extremelyEffective);
 		    }
 		} );
 
