@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+
+  "name": "pokeLookup",
+  "description": "Looks up a Pokemon and displays its weaknesses and strengths",
+  "version": "1.0",
+  "icons": { "16": "icon.png",
+             "48": "icon48.png",
+            "128": "icon128.png" },
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html",
+    "default_title": "pokeLookup"
+  },
+  // "content_security_policy": "script-src 'self' https://bulbapedia.bulbagarden.net/; object-src 'self'",
+  "permissions": ["http://*/"]
+}
