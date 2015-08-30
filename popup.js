@@ -8,6 +8,96 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function getImageUrl(searchTerm, callback, errorCallback) {
+  // Google image search - 100 searches per day.
+  // https://developers.google.com/image-search/
+  var searchUrl = 'https://ajax.googleapis.com/ajax/services/search/images' +
+    '?v=1.0&q=' + encodeURIComponent(searchTerm);
+
+  $.ajax({
+      url: searchUrl,
+      type: 'GET',
+      dataType: 'jsonp',
+      success: function(x) { 
+      	console.log("Success"); 
+      	console.log(x);
+
+      	var firstResult = x.responseData.results[0];
+      	if (firstResult == undefined) {
+      		return;
+      	}
+      	// Take the thumbnail instead of the full image to get an approximately
+      	// consistent image size.
+      	var imageUrl = firstResult.tbUrl;
+      	var width = parseInt(firstResult.tbWidth);
+      	var height = parseInt(firstResult.tbHeight);
+      	callback(imageUrl, width, height);
+      },
+      error: function(x) { 
+      	console.log('Failed!'); 
+      	errorCallback('Network error.');
+      },
+  });
+}
+
+function setImage(searchTerm) {
+    getImageUrl(searchTerm, function(imageUrl, width, height) {
+      var imageResult = document.getElementById('image-result');
+      // Explicitly set the width/height to minimize the number of reflows. For
+      // a single image, this does not matter, but if you're going to embed
+      // multiple external images in your page, then the absence of width/height
+      // attributes causes the popup to resize multiple times.
+      imageResult.width = width;
+      imageResult.height = height;
+      imageResult.src = imageUrl;
+      imageResult.hidden = false;
+
+    }, function(errorMessage) {
+      console.log('Cannot display image.' + errorMessage);
+    });
+}
+
+function setAbility(txt) {
+	var abilityRgx = /\\nability1=(.+?(?=\|))/;
+	var ability = txt.match(abilityRgx);
+	ability = ability[1].toString();
+	ability = ability.trim();
+	document.getElementById('ability').innerHTML = '<b>Ability: ' +ability+'</b>';
+	setAbilityText(ability);
+}
+
+function setAbilityText(ability) {
+	var abilityURL = 'http://bulbapedia.bulbagarden.net/w/api.php?action=query&prop=revisions&rvprop=content&titles=' + ability + '_(Ability)';
+	$.ajax( {
+	    url: abilityURL,
+	    dataType: 'json',
+	    type: 'GET',
+	    headers: { 'Api-User-Agent': 'battledex/1.0 (zoo.christina@gmail.com)' },
+	    success: function(data) {
+	    	console.log('Ability got?');
+	    },
+	    error: function(data) {
+	    	console.log('Ability error?');
+	    	console.log(data.responseText);
+	    	var response = data.responseText;
+	    	var rgx = /text6=(.+?(?=\.))/;
+	    	var abilityText = response.match(rgx)[1].toString();
+	    	abilityText = abilityText.replace(/\\u00e9/, 'e');
+	    	console.log(abilityText);
+	    	if (abilityText == undefined) { return; }
+	    	else { 
+	    		var abilityAnchor = document.getElementById('ability');
+	    		var node = document.createElement("p");
+	    		var add = document.createTextNode(abilityText);
+	    		node.setAttribute('id', 'abilityText');
+	    		node.appendChild(add);
+	    		abilityAnchor.appendChild(node); 
+	    	}
+	    	return;
+	    }
+	});
+}
+
 function handleClick() {
 	var value = document.getElementById('pkmnName').value;
 	console.log(value);
@@ -16,7 +106,7 @@ function handleClick() {
 		document.getElementById('text').innerHTML = "Please enter a real pokemon";
 	}
 	else {
-		document.getElementById('text').innerHTML = "Looking up " + value;
+		document.getElementById('status').innerHTML = "Looking up " + value;
 		value = value.toLowerCase();
 		var pokeURL = 'http://bulbapedia.bulbagarden.net/w/api.php?action=query&prop=revisions&titles='+value+'_(Pok%C3%A9mon)&rvprop=content&format=jsonfm';
 
@@ -50,6 +140,9 @@ function handleClick() {
 		    		document.getElementById('text').innerHTML = 'Please enter a real Pokemon';
 		    		return;
 		    	}
+
+		    	setImage(value);
+		    	setAbility(txt);
 
 		    	var rgx = /===Type effectiveness===\\n{{TypeEffectiveness(.+?(?=\|\\n\\nnotes))/;
 		    	var textNode = txt.match(rgx);
