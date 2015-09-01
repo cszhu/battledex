@@ -18,8 +18,8 @@ function getImageUrl(searchTerm, callback, errorCallback) {
       url: searchUrl,
       type: 'GET',
       dataType: 'jsonp',
-      success: function(x) { 
-      	console.log("Success"); 
+      success: function(x) {
+      	console.log("Success");
       	console.log(x);
 
       	var firstResult = x.responseData.results[0];
@@ -33,8 +33,8 @@ function getImageUrl(searchTerm, callback, errorCallback) {
       	var height = parseInt(firstResult.tbHeight);
       	callback(imageUrl, width, height);
       },
-      error: function(x) { 
-      	console.log('Failed!'); 
+      error: function(x) {
+      	console.log('Failed!');
       	errorCallback('Network error.');
       },
   });
@@ -85,13 +85,13 @@ function setAbilityText(ability) {
 	    	abilityText = abilityText.replace(/\\u00e9/, 'e');
 	    	console.log(abilityText);
 	    	if (abilityText == undefined) { return; }
-	    	else { 
+	    	else {
 	    		var abilityAnchor = document.getElementById('ability');
 	    		var node = document.createElement("p");
 	    		var add = document.createTextNode(abilityText);
 	    		node.setAttribute('id', 'abilityText');
 	    		node.appendChild(add);
-	    		abilityAnchor.appendChild(node); 
+	    		abilityAnchor.appendChild(node);
 	    	}
 	    	return;
 	    }
@@ -165,7 +165,7 @@ function setWeaknesses(txt) {
 			else if (dmgVal == 400) { extremelyEffective.push(attackType); }
 		}
 
-	}// end of for loop		    	
+	}// end of for loop
 
 
 	linebreak = document.createElement('br');
@@ -178,7 +178,7 @@ function setWeaknesses(txt) {
 
 		boldNode.appendChild(titleText);
 		node.appendChild(boldNode);
-		document.getElementById("text").appendChild(node);  
+		document.getElementById("text").appendChild(node);
 
 		for (i=0; i<pkmnType.length; i++){
 			console.log('adding ' + pkmnType[i]);
@@ -198,7 +198,7 @@ function setWeaknesses(txt) {
 
 		boldNode.appendChild(titleText);
 		node.appendChild(boldNode);
-		document.getElementById("text").appendChild(node);  
+		document.getElementById("text").appendChild(node);
 
 		for (i=0; i<notEffective.length; i++){
 			console.log('adding ' + notEffective[i]);
@@ -218,7 +218,7 @@ function setWeaknesses(txt) {
 
 		boldNode.appendChild(titleText);
 		node.appendChild(boldNode);
-		document.getElementById("text").appendChild(node);  
+		document.getElementById("text").appendChild(node);
 		for (i=0; i<barelyEffective.length; i++){
 			console.log('adding ' + barelyEffective[i]);
 			var div = document.getElementById('barelyEffective');
@@ -237,7 +237,7 @@ function setWeaknesses(txt) {
 
 		boldNode.appendChild(titleText);
 		node.appendChild(boldNode);
-		document.getElementById("text").appendChild(node);  
+		document.getElementById("text").appendChild(node);
 		for (i=0; i<halfEffective.length; i++){
 			console.log('adding ' + halfEffective[i]);
 			var div = document.getElementById('halfEffective');
@@ -256,7 +256,7 @@ function setWeaknesses(txt) {
 
 		boldNode.appendChild(titleText);
 		node.appendChild(boldNode);
-		document.getElementById("text").appendChild(node);   
+		document.getElementById("text").appendChild(node);
 		for (i=0; i<Effective.length; i++){
 			console.log('adding ' + Effective[i]);
 			var div = document.getElementById('Effective');
@@ -275,7 +275,7 @@ function setWeaknesses(txt) {
 
 		boldNode.appendChild(titleText);
 		node.appendChild(boldNode);
-		document.getElementById("text").appendChild(node);  
+		document.getElementById("text").appendChild(node);
 		for (i=0; i<superEffective.length; i++){
 			console.log('adding ' + superEffective[i]);
 			var div = document.getElementById('superEffective');
@@ -294,7 +294,7 @@ function setWeaknesses(txt) {
 
 		boldNode.appendChild(titleText);
 		node.appendChild(boldNode);
-		document.getElementById("text").appendChild(node);  
+		document.getElementById("text").appendChild(node);
 		for (i=0; i<extremelyEffective.length; i++){
 			console.log('adding ' + extremelyEffective[i]);
 			var div = document.getElementById('extremelyEffective');
