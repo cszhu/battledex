@@ -1,12 +1,7 @@
 <!doctype html>
-<!--
- This page is shown when the extension button is clicked, because the
- "browser_action" field in manifest.json contains the "default_popup" key with
- value "popup.html".
- -->
 <html>
   <head>
-    <title>pokeLookup's Popup</title>
+    <title>Battledex</title>
     <style>
       body {
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
@@ -21,29 +16,24 @@
         max-width: 400px;
       }
     </style>
-
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
-     -->
-     <script src="jquery-1.11.3.js"></script>
+    <script src="jquery-1.11.3.js"></script>
     <script src="popup.js"></script>
   </head>
   <body>
-    <input type="text" id="pkmnName"><button type="submit" id="submitButton">Search!</button>
+    <input type="text" id="pkmnName" />
+    <button type="submit" id="submitButton">Search!</button>
     <p id="status"></p>
-    <img id="image-result">
+    <img id="image-result" />
     <p id="ability"></p>
     <p id="text"></p>
-   <!--  <p id="pkmnType"></p><br>
+    <!--
+    <p id="pkmnType"></p><br>
     <p id="notEffective"></p><br>
     <p id="barelyEffective"></p><br>
     <p id="halfEffective"></p><br>
     <p id="Effective"></p><br>
     <p id="superEffective"></p><br>
-    <p id="extremelyEffective"></p><br> -->
+    <p id="extremelyEffective"></p><br>
+    -->
   </body>
 </html>
-
