@@ -10,7 +10,7 @@ function getImageUrl(searchTerm, callback, errorCallback) {
   // Google image search - 100 searches per day.
   // https://developers.google.com/image-search/
   var searchUrl = 'https://ajax.googleapis.com/ajax/services/search/images' +
-    '?v=1.0&q=' + encodeURIComponent(searchTerm);
+    '?v=1.0&q=' + encodeURIComponent(searchTerm) + '&as_filetype=png';
 
   $.ajax({
     url: searchUrl,
@@ -80,6 +80,7 @@ function setAbilityText(ability) {
       var rgx = /text6=(.+?(?=\.))/;
       var abilityText = response.match(rgx)[1].toString();
       abilityText = abilityText.replace(/\\u00e9/, 'e');
+      abilityText = abilityText.replace(/Pok\\u00e9mon/, 'Pokemon');
       console.log(abilityText);
       if (abilityText === undefined) {
         return;
