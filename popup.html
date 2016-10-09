@@ -1,32 +1,23 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Battledex</title>
-    <script src="jquery-1.11.3.js"></script>
-    <script src="popup.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>  </head>
-  <body>
-    <center>
+<head>
+  <title>Battledex</title>
+  <script src="jquery-1.11.3.js"></script>
+  <script src="popup.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">  
+</head>
+<body>
+  <div id="pokemonName"></div>
+  <div id="input">
     <input type="text" id="pkmnName" />
-    <button type="submit" id="submitButton">Search!</button>
-    <p id="status"></p>
-    <img id="image-result" />
-    <div class="ability">
-      <p id="ability"></p>
-    </div>
-    </center>
-    <div class="text">
-      <p id="text"></p>
-    </div>
-    <!--
-    <p id="pkmnType"></p><br>
-    <p id="notEffective"></p><br>
-    <p id="barelyEffective"></p><br>
-    <p id="halfEffective"></p><br>
-    <p id="Effective"></p><br>
-    <p id="superEffective"></p><br>
-    <p id="extremelyEffective"></p><br>
-    -->
-  </body>
+    <input type="button" value="Submit" id="submitButton"">
+  </div>
+  <div id="height"></div>
+  <div id="weight"></div>
+  <img id="sprite" />
+  <div id="description"></div>
+  <div id="type1"></div>
+  <div id="type2"></div>
+</body>
 </html>

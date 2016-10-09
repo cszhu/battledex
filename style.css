@@ -1,38 +1,85 @@
 body {
-  font-family: Open Sans, sans-serif;
+  font-family: VT323, sans-serif;
   font-size: 14px;
-  min-width: 300px;
-  background-color: #FFDEDB;
+  min-width: 380px;
+  min-height: 250px;
+  background-image: url("img/bg_modern.jpg");
 }
 
-#pkmnName {
-  border: 2px solid white;
-  outline: none;
+#input {
+  position: absolute;
+  left: 180px;
+  top: 64px;
 }
 
 #submitButton {
-  border: 2px solid white;
+  border: 1px solid black;
   background: white;
 }
 
-#image-result {
-    background-color: rgba(255, 255, 255, 0.6);
+#pkmnName {
+  border: 1px solid black;
+  outline: none;
 }
 
-div.ability {
-    background-color: rgba(255, 255, 255, 0.6);
-}
-#ability {
+#sprite {
+  position: absolute;
+  left: 30px;
+  top: 30px;
+  width: 140px;
+  height: auto;
+  outline: none;
+  border: none;
 }
 
-div.text {
-  background-color: rgba(255, 255, 255, 0.6);
+#height {
+  position: absolute;
+  font-size: 20px;
+  left: 275px;
+  top: 145px;
 }
 
-#status {
-  /* avoid an excessively wide status text */
-  white-space: pre;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: 400px;
+#weight {
+  position: absolute;
+  font-size: 20px;
+  left: 275px;
+  top: 168px;
+}
+
+#description {
+  width: 305px;
+  height: 55px;
+  position: absolute;
+  left: 45px;
+  top: 205px;
+  font-size: 15px;
+}
+
+#type1 {
+  position: absolute;
+  left: 240px;
+  top: 102px;
+  font-size: 16px;
+}
+
+#type2 {
+  position: absolute;
+  left: 314px;
+  top: 102px;
+  font-size:16px;
+}
+
+#pokemonName {
+  max-width: 180px;
+  position: absolute;
+  left: 210px;
+  top: 35px;
+  font-size: 20px;
+  color: #FFFFFF;
+  padding: 0;
+}
+
+p {
+  padding: 0 !important;
+  margin: 0 !important;
 }

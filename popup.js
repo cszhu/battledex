@@ -1,370 +1,116 @@
 window.addEventListener('load', function() {
+  //Listener for button click
   document.getElementById('submitButton').addEventListener('click', handleClick);
 });
 
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function getImageUrl(searchTerm, callback, errorCallback) {
-  // Google image search - 100 searches per day.
-  // https://developers.google.com/image-search/
-  var searchUrl = 'https://ajax.googleapis.com/ajax/services/search/images' +
-    '?v=1.0&q=' + encodeURIComponent(searchTerm) + '&as_filetype=png';
+/*
+ * Main handler that calls the PokeAPI
+ */
+function handleClick() {
+  // Must reset values for each search.
+  reset();
+  // Grab input from input field.
+  var input = document.getElementById('pkmnName').value;
+  var generateurl = "https://pokeapi.co/api/v2/" + "pokemon/" + input.toLowerCase();
 
   $.ajax({
-    url: searchUrl,
-    type: 'GET',
-    dataType: 'jsonp',
-    success: function(x) {
-      console.log('Success');
-      console.log(x);
-
-      var firstResult = x.responseData.results[0];
-      if (firstResult === undefined) {
-        return;
-      }
-      // Take the thumbnail instead of the full image to get an approximately
-      // consistent image size.
-      var imageUrl = firstResult.tbUrl;
-      var width = parseInt(firstResult.tbWidth);
-      var height = parseInt(firstResult.tbHeight);
-      callback(imageUrl, width, height);
-    },
-    error: function(x) {
-      console.log('Failed!');
-      errorCallback('Network error.');
-    },
-  });
-}
-
-function setImage(searchTerm) {
-  getImageUrl(searchTerm, function(imageUrl, width, height) {
-    var imageResult = document.getElementById('image-result');
-    // Explicitly set the width/height to minimize the number of reflows. For
-    // a single image, this does not matter, but if you're going to embed
-    // multiple external images in your page, then the absence of width/height
-    // attributes causes the popup to resize multiple times.
-    imageResult.width = width;
-    imageResult.height = height;
-    imageResult.src = imageUrl;
-    imageResult.hidden = false;
-  }, function(errorMessage) {
-    console.log('Cannot display image.' + errorMessage);
-  });
-}
-
-function setAbility(txt) {
-  var abilityRgx = /\\nability1=(.+?(?=\|))/;
-  var ability = txt.match(abilityRgx);
-  ability = ability[1].toString();
-  ability = ability.trim();
-  document.getElementById('ability').innerHTML = '<b>Ability: ' +ability+'</b>';
-  setAbilityText(ability);
-}
-
-function setAbilityText(ability) {
-  var abilityURL = 'http://bulbapedia.bulbagarden.net/w/api.php?action=query&prop=revisions&rvprop=content&titles=' + ability + '_(Ability)';
-  $.ajax({
-    url: abilityURL,
-    dataType: 'json',
-    type: 'GET',
-    headers: { 'Api-User-Agent': 'battledex/1.0 (zoo.christina@gmail.com)' },
+    type: "GET",
+    url: generateurl,
+    dataType: "json",
+    async: true,
     success: function(data) {
-      console.log('Ability got?');
-    },
-    error: function(data) {
-      console.log('Ability error?');
-      console.log(data.responseText);
-      var response = data.responseText;
-      var rgx = /text6=(.+?(?=\.))/;
-      var abilityText = response.match(rgx)[1].toString();
-      abilityText = abilityText.replace(/\\u00e9/, 'e');
-      abilityText = abilityText.replace(/Pok\\u00e9mon/, 'Pokemon');
-      console.log(abilityText);
-      if (abilityText === undefined) {
-        return;
-      } else {
-        var abilityAnchor = document.getElementById('ability');
-        var node = document.createElement('p');
-        var add = document.createTextNode(abilityText);
-        node.setAttribute('id', 'abilityText');
-        node.appendChild(add);
-        abilityAnchor.appendChild(node);
-      }
-      return;
+      // Debugging purposes
+      console.log(data.name);
+      console.log(data.height);
+      console.log(data.weight);
+      console.log(data.sprites.front_default);
+      console.log(data.abilities[0].ability.name);
+      console.log(data.types);
+
+      addSprite(data.sprites.front_default);
+      addName(capitalizeFirstLetter(data.name))
+      addHeight(data.height);
+      addWeight(data.weight);
+      addDescription(data.name);
+      addAbilities(data.abilities[0].ability.name);
+      addTypes (data.types);
     }
   });
 }
 
-function setWeaknesses(txt) {
-  var rgx = /===Type effectiveness===\\n{{TypeEffectiveness(.+?(?=\|\\n\\nnotes))/;
-  var textNode = txt.match(rgx);
-  console.log(textNode);
+function addTypes(types) {
+  appendOntoDoc('type1', capitalizeFirstLetter(types[0].type.name));
 
-  if (textNode === null) { // why is not all regex the same
-    var rgx2 = /===Type effectiveness===\\n{{TypeEffectiveness(.+?(?=\|\\nnotes))/;
-    textNode = txt.match(rgx2);
+  // Some Pokemon don't have 2nd types. Check if it exists.
+  // If it does, add it.
+  if (types[1].type.name !== null) {
+    appendOntoDoc('type2', capitalizeFirstLetter(types[1].type.name));
   }
-  if (textNode === null) {
-    var rgx3 = /Effectiveness(.+?(?=}}))/;
-    textNode = txt.match(rgx3);
-  }
+}
 
-  if (textNode[0] === null) { return; }
+function addAbilities(ability) {
+  appendOntoDoc('description', "Abilities: " + capitalizeFirstLetter(ability).replace("-", " "));
+}
 
-  console.log('text node 0' + textNode[0]);
-  console.log('text node 1' + textNode[1]);
-
-  var strTxtNode = textNode[1].toString();
-
-  var types = strTxtNode.split('|\\n');
-  // console.log('split one: ' + types[0] + ' ' + types[1] + ' ' + types[2] + ' ' + types[3]);
-
-  var notEffective = []; //does 0x dmg
-  var barelyEffective = []; //does 0.25x dmg
-  var halfEffective = []; // does 0.5x dmg
-  var Effective = []; // does 1x dmg
-  var superEffective = []; // does 2x dmg
-  var extremelyEffective = []; //does 4x dmg
-
-  var pkmnType = []; // logs type of the pokemon
-
-  // console.log('TYPE 1 SPLIT');
-
-  for (j = 0; j < types.length; j++) {
-    console.log(types[j]);
-    var pieces = types[j].toString(); // change to string
-    pieces = pieces.split('='); // split at = sign
-
-    // console.log(pieces);
-    // console.log('pieces length is ' + pieces.length)
-    if (pieces[0].length === 0) {
-      console.log('nothing here');
-    } else {
-      var attackType = pieces[0]; // first half of =, can either be type1 or an attacktype
-      attackType = attackType.replace(/\\n/, '');
-
-      var dmgVal = pieces[1]; //extra whitespace
-      dmgVal = dmgVal.trim();
-
-      console.log('attacktype is ' + attackType);
-      console.log('dmg val is ' + dmgVal);
-      // console.log('index is ' + attackType.indexOf('type'));
-      if (attackType.indexOf('type') > -1) {
-        pkmnType.push(dmgVal); //the second half of the string contains the type
-      } else if (dmgVal === 0) {
-        notEffective.push(attackType);
-      } else if (dmgVal == 25) {
-        barelyEffective.push(attackType);
-      } else if (dmgVal == 50) {
-        halfEffective.push(attackType);
-      } else if (dmgVal == 100) {
-        Effective.push(attackType);
-      } else if (dmgVal == 200) {
-        superEffective.push(attackType);
-      } else if (dmgVal == 400) {
-        extremelyEffective.push(attackType);
-      }
+/*
+ * The Pokedex descriptions come from another API call
+ */
+function addDescription(name) {
+  var generateurl = "https://pokeapi.co/api/v2/" + "pokemon-species/" + name;
+  $.ajax({
+    type: "GET",
+    url: generateurl,
+    dataType: "json",
+    async: true,
+    success: function(data) {
+      var rawPokeDex = data.flavor_text_entries[1].flavor_text;
+      rawPokeDex = rawPokeDex.split(".");
+      entry = rawPokeDex[0] + ".";
+      appendOntoDoc('description', entry);
     }
-  } // end of for loop
+  });
+}
 
-  linebreak = document.createElement('br');
+function addHeight(height) {
+  appendOntoDoc('height', height);
+}
 
-  var node, boldNode, titleText, div, add;
-  if (pkmnType.length !== 0) {
-    node = document.createElement('p');
-    boldNode = document.createElement('b');
-    titleText = document.createTextNode('Pokemon Type: ');
-    node.setAttribute('id', 'pkmnType');
+function addWeight(weight) {
+  appendOntoDoc('weight', weight);
+}
 
-    boldNode.appendChild(titleText);
-    node.appendChild(boldNode);
-    document.getElementById('text').appendChild(node);
+function addName(name) {
+  appendOntoDoc('pokemonName', name);
+}
 
-    for (i = 0; i < pkmnType.length; i++) {
-      console.log('adding ' + pkmnType[i]);
-      div = document.getElementById('pkmnType');
-      add = pkmnType[i];
-      div.innerHTML = div.innerHTML + ' ' + capitalizeFirstLetter(add);
-    }
-    node.appendChild(linebreak);
-    node.appendChild(linebreak);
-  }
-
-  if (notEffective.length !== 0) {
-    node = document.createElement('p');
-    boldNode = document.createElement('b');
-    titleText = document.createTextNode('Immune [0x]: ');
-    node.setAttribute('id', 'notEffective');
-
-    boldNode.appendChild(titleText);
-    node.appendChild(boldNode);
-    document.getElementById('text').appendChild(node);
-
-    for (i = 0; i < notEffective.length; i++) {
-      console.log('adding ' + notEffective[i]);
-      div = document.getElementById('notEffective');
-      add = notEffective[i].toString();
-      div.innerHTML = div.innerHTML + ' ' + capitalizeFirstLetter(add);
-    }
-    node.appendChild(linebreak);
-    node.appendChild(linebreak);
-  }
-
-  if (barelyEffective.length !== 0) {
-    node = document.createElement('p');
-    boldNode = document.createElement('b');
-    titleText = document.createTextNode('Very Resistant [0.25x]: ');
-    node.setAttribute('id', 'barelyEffective');
-
-    boldNode.appendChild(titleText);
-    node.appendChild(boldNode);
-    document.getElementById('text').appendChild(node);
-    for (i = 0; i < barelyEffective.length; i++) {
-      console.log('adding ' + barelyEffective[i]);
-      div = document.getElementById('barelyEffective');
-      add = barelyEffective[i].toString();
-      div.innerHTML = div.innerHTML + ' ' + capitalizeFirstLetter(add);
-    }
-    node.appendChild(linebreak);
-    node.appendChild(linebreak);
-  }
-
-  if (halfEffective.length !== 0) {
-    node = document.createElement('p');
-    boldNode = document.createElement('b');
-    titleText = document.createTextNode('Resistant [0.5x]: ');
-    node.setAttribute('id', 'halfEffective');
-
-    boldNode.appendChild(titleText);
-    node.appendChild(boldNode);
-    document.getElementById('text').appendChild(node);
-    for (i = 0; i < halfEffective.length; i++) {
-      console.log('adding ' + halfEffective[i]);
-      div = document.getElementById('halfEffective');
-      add = halfEffective[i].toString();
-      div.innerHTML = div.innerHTML + ' ' + capitalizeFirstLetter(add);
-    }
-    node.appendChild(linebreak);
-    node.appendChild(linebreak);
-  }
-
-  if (Effective.length !== 0) {
-    node = document.createElement('p');
-    boldNode = document.createElement('b');
-    titleText = document.createTextNode('Normal [1x]: ');
-    node.setAttribute('id', 'Effective');
-
-    boldNode.appendChild(titleText);
-    node.appendChild(boldNode);
-    document.getElementById('text').appendChild(node);
-    for (i = 0; i < Effective.length; i++) {
-      console.log('adding ' + Effective[i]);
-      div = document.getElementById('Effective');
-      add = Effective[i].toString();
-      div.innerHTML = div.innerHTML + ' ' + capitalizeFirstLetter(add);
-    }
-    node.appendChild(linebreak);
-    node.appendChild(linebreak);
-  }
-
-  if (superEffective.length !== 0) {
-    node = document.createElement('p');
-    boldNode = document.createElement('b');
-    titleText = document.createTextNode('Super Effective [2x]: ');
-    node.setAttribute('id', 'superEffective');
-
-    boldNode.appendChild(titleText);
-    node.appendChild(boldNode);
-    document.getElementById('text').appendChild(node);
-    for (i = 0; i < superEffective.length; i++) {
-      console.log('adding ' + superEffective[i]);
-      div = document.getElementById('superEffective');
-      add = superEffective[i].toString();
-      div.innerHTML = div.innerHTML + ' ' + capitalizeFirstLetter(add);
-    }
-    node.appendChild(linebreak);
-    node.appendChild(linebreak);
-  }
-
-  if (extremelyEffective.length !== 0) {
-    node = document.createElement('p');
-    boldNode = document.createElement('b');
-    titleText = document.createTextNode('Ultra Effective [4x]: ');
-    node.setAttribute('id', 'extremelyEffective');
-
-    boldNode.appendChild(titleText);
-    node.appendChild(boldNode);
-    document.getElementById('text').appendChild(node);
-    for (i = 0; i < extremelyEffective.length; i++) {
-      console.log('adding ' + extremelyEffective[i]);
-      div = document.getElementById('extremelyEffective');
-      add = extremelyEffective[i].toString();
-      div.innerHTML = div.innerHTML + ' ' + capitalizeFirstLetter(add);
-    }
-    node.appendChild(linebreak);
-    node.appendChild(linebreak);
-  }
+function addSprite(url) {
+  var sprite = url;
+  var source = document.getElementById('sprite');
+  source.src = sprite;
 }
 
 function reset() {
-  document.getElementById('status').innerHTML = '';
-  document.getElementById('image-result').src = '';
-  document.getElementById('image-result').hidden = true;
-  document.getElementById('ability').innerHTML = '';
-  document.getElementById('text').innerHTML = '';
+  document.getElementById('pokemonName').innerHTML = '';
+  document.getElementById('sprite').src = '';
+  document.getElementById('height').innerHTML = '';
+  document.getElementById('weight').innerHTML = '';
+  document.getElementById('description').innerHTML = '';
+  document.getElementById('type1').innerHTML = '';
+  document.getElementById('type2').innerHTML = '';
 }
 
-function handleClick() {
-  reset();
-  var value = document.getElementById('pkmnName').value;
-  console.log(value);
-  if (value === '') {
-    console.log('empty');
-    document.getElementById('text').innerHTML = 'Please enter a real pokemon';
-  } else {
-    document.getElementById('status').innerHTML = 'Looking up ' + value;
-    value = value.toLowerCase();
-    var pokeURL = 'http://bulbapedia.bulbagarden.net/w/api.php?action=query&prop=revisions&titles=' + value + '_(Pok%C3%A9mon)&rvprop=content&format=jsonfm';
+/*
+ * @param elementID The ID of the element we want to append text to
+ * @param text The text we want to append
+ */
+function appendOntoDoc(elementId, text) {
+  var source = document.getElementById(elementId);
+  var pNode = document.createElement("p");
+  var textNode = document.createTextNode(text);
+  pNode.appendChild(textNode);
+  source.appendChild(pNode);
+}
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('get', pokeURL, true);
-
-    // Using XMLHttpRequest
-    xhr.setRequestHeader('Api-User-Agent', 'pokeLookup/1.0 (zoo.christina@gmail.com)');
-
-    // Using jQuery
-    $.ajax({
-      url: pokeURL,
-      // data: queryData,
-      dataType: 'json',
-      type: 'GET',
-      headers: { 'Api-User-Agent': 'pokeLookup/1.0 (zoo.christina@gmail.com)' },
-      success: function(data) {
-        console.log('yay');
-      },
-      error: function(data) {
-        // console.log(data);
-        document.getElementById('status').innerHTML = '';
-
-        var txt = data.responseText;
-        console.log('response text');
-        console.log(txt);
-
-        //checking if the pokemon exists//
-        var warningRgx = /"pages": {(\n.+?(?=\{))/;
-        var warningNode = txt.match(warningRgx);
-        if (warningNode[0].indexOf('-1') > 0) {
-          console.log('DOES NOT EXIST');
-          document.getElementById('text').innerHTML = 'Please enter a real Pokemon';
-          return;
-        }
-
-        setImage(value);
-        setAbility(txt);
-        setWeaknesses(txt);
-      }
-    });
-  }
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
