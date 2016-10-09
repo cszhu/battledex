@@ -1,6 +1,13 @@
 window.addEventListener('load', function() {
   //Listener for button click
-  document.getElementById('submitButton').addEventListener('click', handleClick);
+  var submit = document.getElementById('submitButton');
+  submit.addEventListener('click', handleClick);
+  var inputTxt = document.getElementById('pkmnName');
+  inputTxt.onkeyup = function (e) {
+    if(e.keyCode == 13){
+       handleClick();
+    }
+  };
 });
 
 /*
@@ -12,6 +19,7 @@ function handleClick() {
   // Grab input from input field.
   var input = document.getElementById('pkmnName').value;
   var generateurl = "https://pokeapi.co/api/v2/" + "pokemon/" + input.toLowerCase();
+  startSpin();
 
   $.ajax({
     type: "GET",
@@ -36,6 +44,17 @@ function handleClick() {
       addTypes (data.types);
     }
   });
+}
+
+function startSpin(){
+  var sprite = 'img/spinner.gif';
+  var source = document.getElementById('spinner');
+  source.src = sprite;
+}
+
+function stopSpin(){
+  var source = document.getElementById('spinner');
+  source.src = '';
 }
 
 function addTypes(types) {
@@ -84,6 +103,7 @@ function addName(name) {
 }
 
 function addSprite(url) {
+  stopSpin();
   var sprite = url;
   var source = document.getElementById('sprite');
   source.src = sprite;
