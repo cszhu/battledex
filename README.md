@@ -1,5 +1,17 @@
 # Battledex
-Chrome extension that looks up a Pokemon and displays its weaknesses and
-strengths
+Chrome extension that looks up a Pokemon. Basically a convenient Pokedex.
 
-Currently works for all Pokemon, but is unable to search up Mega-Evolutions. Dependent on scraping data from Wikipedia. 
+This Pokedex is able to look up:
+  - Name 
+  - Type(s)
+  - Ability
+  - Height
+  - Weight
+  - PokeDex description
+  - Sprite
+  
+### Live Demo
+
+Chrome extension is here!
+
+https://chrome.google.com/webstore/detail/battledex/fdcihoacomiekdpkgbhdoeelfhnjinlo/related
