@@ -20,6 +20,8 @@ body {
 #pkmnName {
   border: 1px solid black;
   outline: none;
+  width: 120px;
+  max-width: 120px;
 }
 
 #sprite {

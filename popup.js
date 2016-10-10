@@ -1,7 +1,6 @@
 window.addEventListener('load', function() {
   //Listener for button click
-  var submit = document.getElementById('submitButton');
-  submit.addEventListener('click', handleClick);
+  document.getElementById('submitButton').addEventListener('click', handleClick);
   var inputTxt = document.getElementById('pkmnName');
   inputTxt.onkeyup = function (e) {
     if(e.keyCode == 13){
@@ -18,6 +17,11 @@ function handleClick() {
   reset();
   // Grab input from input field.
   var input = document.getElementById('pkmnName').value;
+
+  if (input === '') {
+    errorMessage();
+    return;
+  }
   var generateurl = "https://pokeapi.co/api/v2/" + "pokemon/" + input.toLowerCase();
   startSpin();
 
@@ -36,14 +40,24 @@ function handleClick() {
       console.log(data.types);
 
       addSprite(data.sprites.front_default);
-      addName(capitalizeFirstLetter(data.name))
+      addName(capitalizeFirstLetter(data.name), data.id)
       addHeight(data.height);
       addWeight(data.weight);
       addDescription(data.name);
       addAbilities(data.abilities[0].ability.name);
       addTypes (data.types);
+    },
+    error: function(data) {
+      console.log(data);
+      errorMessage();
     }
   });
+}
+
+function errorMessage() {
+  appendOntoDoc('pokemonName', '!NOT FOUND!');
+  appendOntoDoc('description', 'The Pokemon you searched for was not found. Please try again.');
+  stopSpin();
 }
 
 function startSpin(){
@@ -98,8 +112,8 @@ function addWeight(weight) {
   appendOntoDoc('weight', weight);
 }
 
-function addName(name) {
-  appendOntoDoc('pokemonName', name);
+function addName(name, id) {
+  appendOntoDoc('pokemonName', '#' + id + ' ' + name);
 }
 
 function addSprite(url) {
