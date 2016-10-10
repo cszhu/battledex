@@ -17,7 +17,6 @@ function handleClick() {
   reset();
   // Grab input from input field.
   var input = document.getElementById('pkmnName').value;
-
   if (input === '') {
     errorMessage();
     return;
@@ -73,7 +72,6 @@ function stopSpin(){
 
 function addTypes(types) {
   appendOntoDoc('type1', capitalizeFirstLetter(types[0].type.name));
-
   // Some Pokemon don't have 2nd types. Check if it exists.
   // If it does, add it.
   if (types[1].type.name !== null) {
