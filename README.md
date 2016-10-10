@@ -1,8 +1,8 @@
 # Battledex
-Chrome extension that looks up a Pokemon. Basically a convenient Pokedex.
+Chrome extension that looks up a Pokemon. Basically a convenient Pokedex. 
 
 This Pokedex is able to look up:
-  - Name 
+  - Name & ID #
   - Type(s)
   - Ability
   - Height
@@ -10,8 +10,10 @@ This Pokedex is able to look up:
   - PokeDex description
   - Sprite
   
+If you mistype the Pokemon name it will display an error.
+
 ### Live Demo
 
 Chrome extension is here!
 
-https://chrome.google.com/webstore/detail/battledex/fdcihoacomiekdpkgbhdoeelfhnjinlo/related
+https://chrome.google.com/webstore/detail/battledex/fdcihoacomiekdpkgbhdoeelfhnjinlo/
