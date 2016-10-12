@@ -16,7 +16,7 @@ function handleClick() {
   // Must reset values for each search.
   reset();
   // Grab input from input field.
-  var input = document.getElementById('pkmnName').value;
+  var input = document.getElementById('pkmnName').value.replace(/[^\w]/gi, '');
   if (input === '') {
     errorMessage();
     return;
@@ -40,8 +40,8 @@ function handleClick() {
 
       addSprite(data.sprites.front_default);
       addName(capitalizeFirstLetter(data.name), data.id)
-      addHeight(data.height);
-      addWeight(data.weight);
+      addHeight(data.height/10);
+      addWeight(data.weight/10);
       addDescription(data.name);
       addAbilities(data.abilities[0].ability.name);
       addTypes (data.types);
@@ -103,11 +103,11 @@ function addDescription(name) {
 }
 
 function addHeight(height) {
-  appendOntoDoc('height', height);
+  appendOntoDoc('height', height + 'm');
 }
 
 function addWeight(weight) {
-  appendOntoDoc('weight', weight);
+  appendOntoDoc('weight', weight + 'kg');
 }
 
 function addName(name, id) {
