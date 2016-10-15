@@ -3,7 +3,7 @@ body {
   font-size: 14px;
   min-width: 380px;
   min-height: 250px;
-  background-image: url("img/bg_modern.jpg");
+  background-image: url("../img/bg_modern.jpg");
 }
 
 #input {
@@ -70,6 +70,8 @@ body {
   left: 240px;
   top: 102px;
   font-size: 16px;
+  max-width: 70px;
+  height: auto;
 }
 
 #type2 {
@@ -77,6 +79,8 @@ body {
   left: 314px;
   top: 102px;
   font-size:16px;
+  max-width: 70px;
+  height: auto;
 }
 
 #pokemonName {
